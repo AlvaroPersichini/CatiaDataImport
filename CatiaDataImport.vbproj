@@ -74,7 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CatiaSession.vb" />
-    <Compile Include="Diccionarios.vb" />
     <Compile Include="Form1.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -99,12 +98,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="PowerProduct.vb" />
-    <Compile Include="Procedimientos.vb" />
     <Compile Include="Program.vb" />
     <Compile Include="SendToWithPartN.vb" />
-    <Compile Include="Structures.vb" />
-    <Compile Include="TextReplace.vb" />
     <Compile Include="UserProperties.vb" />
   </ItemGroup>
   <ItemGroup>

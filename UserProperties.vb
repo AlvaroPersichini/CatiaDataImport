@@ -57,64 +57,64 @@ Module UserProperties
 
 
     'Esto funciona, pero falta terminar
-    Public Sub FillUserPropFromExcel(oProduct As ProductStructureTypeLib.Product)
+    'Public Sub FillUserPropFromExcel(oProduct As ProductStructureTypeLib.Product)
 
-        Dim oDic As Dictionary(Of String, ProductStructureTypeLib.Product) = Diccionarios.DiccT1_PN_oProduct(oProduct)
-        Dim myExcel As Microsoft.Office.Interop.Excel.Application = GetObject(, "Excel.Application")
-        Dim oWorkbook As Microsoft.Office.Interop.Excel.Workbook = myExcel.ActiveWorkbook
-        ' Dim oWorkSheetGrupos As Microsoft.Office.Interop.Excel.Worksheet = oWorkbook.Worksheets.Item(1)
-        Dim oSheetListView As Microsoft.Office.Interop.Excel.Worksheet = oWorkbook.Worksheets.Item(2)
+    '    Dim oDic As Dictionary(Of String, ProductStructureTypeLib.Product) = Diccionarios.DiccT1_PN_oProduct(oProduct)
+    '    Dim myExcel As Microsoft.Office.Interop.Excel.Application = GetObject(, "Excel.Application")
+    '    Dim oWorkbook As Microsoft.Office.Interop.Excel.Workbook = myExcel.ActiveWorkbook
+    '    ' Dim oWorkSheetGrupos As Microsoft.Office.Interop.Excel.Worksheet = oWorkbook.Worksheets.Item(1)
+    '    Dim oSheetListView As Microsoft.Office.Interop.Excel.Worksheet = oWorkbook.Worksheets.Item(2)
 
-        Dim oRange As Microsoft.Office.Interop.Excel.Range = oSheetListView.Range("C3", "C229")
+    '    Dim oRange As Microsoft.Office.Interop.Excel.Range = oSheetListView.Range("C3", "C229")
 
-        For Each C As Microsoft.Office.Interop.Excel.Range In oRange
+    '    For Each C As Microsoft.Office.Interop.Excel.Range In oRange
 
-            If oDic.ContainsKey(C.Value) Then
+    '        If oDic.ContainsKey(C.Value) Then
 
-                If C.Offset(, 8).Value <> "" Then
-                    AddUserProperty(oDic.Item(C.Value), "Material en Bruto")
-                    AddUserPropValue(oDic.Item(C.Value), "Material en Bruto", C.Offset(, 8).Value)
-                End If
+    '            If C.Offset(, 8).Value <> "" Then
+    '                AddUserProperty(oDic.Item(C.Value), "Material en Bruto")
+    '                AddUserPropValue(oDic.Item(C.Value), "Material en Bruto", C.Offset(, 8).Value)
+    '            End If
 
-                If C.Offset(, 9).Value <> "" Then
-                    AddUserProperty(oDic.Item(C.Value), "Material")
-                    AddUserPropValue(oDic.Item(C.Value), "Material", C.Offset(, 9).Value)
-                End If
+    '            If C.Offset(, 9).Value <> "" Then
+    '                AddUserProperty(oDic.Item(C.Value), "Material")
+    '                AddUserPropValue(oDic.Item(C.Value), "Material", C.Offset(, 9).Value)
+    '            End If
 
-            End If
+    '        End If
 
-        Next
+    '    Next
 
-    End Sub
-
-
-
-
-    Sub ClearUserProperties()
-
-    End Sub
+    'End Sub
 
 
 
-    Sub RemoveAllUserProperties(oCurrentProduct As ProductStructureTypeLib.Product)
-        Dim oDic1 As Dictionary(Of String, ProductStructureTypeLib.Product) = DiccT1_PN_oProduct(oCurrentProduct)
-        Dim Parametros As KnowledgewareTypeLib.Parameters
-        Dim strParam As String
 
-        For Each kvp As KeyValuePair(Of String, ProductStructureTypeLib.Product) In oDic1
-            Parametros = kvp.Value.ReferenceProduct.UserRefProperties
-            If Not kvp.Value.ReferenceProduct.UserRefProperties.Count = 0 Then
-                For Each Parametro As KnowledgewareTypeLib.Parameter In Parametros
-                    strParam = Parametro.Name
-                    Parametros.Remove(strParam)
-                Next
-            Else
-                GoTo SiguienteP
-            End If
-SiguienteP:
-        Next
+    '    Sub ClearUserProperties()
 
-    End Sub
+    '    End Sub
+
+
+
+    '    Sub RemoveAllUserProperties(oCurrentProduct As ProductStructureTypeLib.Product)
+    '        Dim oDic1 As Dictionary(Of String, ProductStructureTypeLib.Product) = DiccT1_PN_oProduct(oCurrentProduct)
+    '        Dim Parametros As KnowledgewareTypeLib.Parameters
+    '        Dim strParam As String
+
+    '        For Each kvp As KeyValuePair(Of String, ProductStructureTypeLib.Product) In oDic1
+    '            Parametros = kvp.Value.ReferenceProduct.UserRefProperties
+    '            If Not kvp.Value.ReferenceProduct.UserRefProperties.Count = 0 Then
+    '                For Each Parametro As KnowledgewareTypeLib.Parameter In Parametros
+    '                    strParam = Parametro.Name
+    '                    Parametros.Remove(strParam)
+    '                Next
+    '            Else
+    '                GoTo SiguienteP
+    '            End If
+    'SiguienteP:
+    '        Next
+
+    '    End Sub
 
 
 End Module

@@ -27,135 +27,107 @@ Module SendToWithPartN
     ' Es preferible utilizar el servicio "SendTo" sin referencias externas, es decir, los product que forma el Structure Design,
     ' cambiarlos a "allCatPart" o eliminar las referencias externas, para que solo queden archivos del tipo "CATProdcut" y "CATPart".
 
+    ' Al realizar el SendTo el comando no tiene en cuanta si el product tiene propiedades como ser "Description", "Source", "Definition", etc.
+    ' Entonces al hacer el SendTo, esas propiedades no se copian al nuevo archivo. Hay que realizar un proceso aparte para copiar esas propiedades.
 
-    ''' <summary>
-    ''' Realiza un "SendTo" con renombrado de archivos con los ParNumbers del árbol
-    ''' </summary>
-    ''' <param name="oProductDocument">Product Raíz</param>
-    ''' <param name="strDir">Directorio Destino</param>
+
+    ' Una advertencia sobre el tamaño del Array
+    ' Como estás manteniendo la línea: Dim oWillBeCopied(oDic1.Count - 1) As Object
+    ' Si el producto raíz tiene referencias externas (como un .CATMaterial que no está en tu diccionario), el SendTo querrá meterlo en el array.
+    ' Como tu array tiene el tamaño exacto de tu diccionario, y el raíz ya ocupa un lugar,
+    ' si hay elementos "extra" que CATIA detecta, la línea GetListOfToBeCopiedFiles podría darte el Error de rango esperado que vimos antes.
+    ' El único riesgo técnico sigue siendo que CATIA encuentre más archivos de los que tu diccionario tiene contabilizados
+
+
+
+
     Public Sub SendTOWPN(oProductDocument As ProductStructureTypeLib.ProductDocument, oDic1 As Specialized.StringDictionary, strDir As String)
 
+        ' IMPORTANTE: Si el documento no está guardado, SendTo no verá los links
+        ' oProductDocument.Save() ' Descomenta esta línea si oWillBeCopied sigue dando 1
 
-
-        Dim intFilesInExistance As Integer = 0 'Cantidad de archivos que ya existen en el Dir destino
-        Dim oDicNoRenamed As New Specialized.StringDictionary ' Contiene los pares que no se pudieron renombrar en la primera vuelta
-        Dim oDicRenamed As New Specialized.StringDictionary   ' Contiene los pares que si se pueden renombrar en la primera vuelt
         Dim objAppCATIA As INFITF.Application = oProductDocument.Application
-        ' Dim oDic1 As Specialized.StringDictionary = DiccT1_DocName_PN(oProductDocument.Product)
-        Dim SendTo As INFITF.SendToService
-        Dim oWillBeCopied(oDic1.Count - 1) As Object
-        Dim ContenedorNombres As Dictionary(Of String, NameContainer)
+        Dim SendTo As INFITF.SendToService = objAppCATIA.CreateSendTo()
 
-
-
-
-        'Arma el objeto SendTo, Referencia lista y Initial File
-        SendTo = objAppCATIA.CreateSendTo()
+        ' 1. Seteamos el archivo raíz
         SendTo.SetInitialFile(oProductDocument.FullName)
+
+        ' 2. Dimensionamos según el diccionario (133)
+        ' Usamos una variable intermedia para ver qué detecta CATIA realmente
+        Dim oWillBeCopied(oDic1.Count - 1) As Object
         SendTo.GetListOfToBeCopiedFiles(oWillBeCopied)
         SendTo.SetDirectoryFile(strDir)
 
-
-        'Arma el contenedor de nombres y Realiza el renombrado, pero no ejecuta
-        'El contenedor de nombres se arma con una funcion especifica para el procedimiento "SendTo"
-        ContenedorNombres = Diccionarios.DicNombres(oWillBeCopied, oDic1)
-        Renombrado(oDicRenamed, oDicNoRenamed, SendTo, ContenedorNombres, oDic1)
-
-
-        'Revisar si ya existen documentos con el mismo nombre en el directorio destino
-        intFilesInExistance = Procedimientos.CountFilesInExistance(strDir, ContenedorNombres)
-
-
-        'Finalmente executa "SendTo.Run() e informa
-        Finalizacion(intFilesInExistance, SendTo, oWillBeCopied, strDir)
+        ' --- CARTEL DE CONTROL ---
+        MsgBox("ESTADO DE CARGA:" & vbCrLf &
+               "oWillBeCopied.Length: " & oWillBeCopied.Length & vbCrLf &
+               "oDic1.Count: " & oDic1.Count)
 
 
 
-        If Err.Number = 0 Then
-            Exit Sub
-        End If
+        ' --- CICLO DE RENOMBRADO ---
+        Dim i As Integer
+        For i = 0 To UBound(oWillBeCopied)
 
+            If oWillBeCopied(i) Is Nothing Then Continue For
 
+            ' Extracción manual para evitar caracteres ilegales
+            Dim strFullPath As String = oWillBeCopied(i).ToString()
+            Dim lastSlash As Integer = strFullPath.LastIndexOf("\")
+            Dim strFileName As String = If(lastSlash > -1, strFullPath.Substring(lastSlash + 1), strFullPath)
 
-    End Sub
+            ' Si el nombre del archivo está en nuestro diccionario
+            If oDic1.ContainsKey(strFileName) Then
+                Dim strNewName As String = oDic1(strFileName)
 
-    Sub Renombrado(oDicRenamed As Specialized.StringDictionary,
-                   oDicNoRenamed As Specialized.StringDictionary,
-                   SendTo As INFITF.SendToService,
-                   ContenedorNombres As Dictionary(Of String, NameContainer),
-                   oDic1 As Specialized.StringDictionary)
+                ' --- VALIDACIÓN PARA EVITAR E_FAIL POR DUPLICADOS ---
+                ' 1. Verificamos que el nombre nuevo no sea igual al actual
+                Dim dotIdx As Integer = strFileName.LastIndexOf(".")
+                Dim currentNameNoExt As String = If(dotIdx > 0, strFileName.Substring(0, dotIdx), strFileName)
 
+                If strNewName <> currentNameNoExt Then
 
-        ' Arma los pares a ser renombrados en uno o dos pases
-        ' Dim ContenedorNombres = Diccionarios.DicNombres(oWillBeCopied, oDic1)
-        For Each kvp As KeyValuePair(Of String, NameContainer) In ContenedorNombres
-            If kvp.Value.sNewNameWithOutExt <> kvp.Value.sDocNameWithOutExt Then
-                If oDic1.ContainsKey(kvp.Value.sNewNameWithExt) Then '(*) 
-                    oDicNoRenamed.Add(kvp.Value.sDocNameWithExt, kvp.Value.sNewNameWithOutExt)  'Arma el diccionario de los que no pudo renombrar en primera vuelta
-                Else
-                    oDicRenamed.Add(kvp.Value.sDocNameWithExt, kvp.Value.sNewNameWithOutExt)  'Arma el diccionario de lo que se pueden renombrar en primera vuelta
+                    ' 2. Verificamos si el nombre "NCU-2517" ya existe en la lista de CATIA
+                    ' Para esto, comparamos el strNewName contra todos los archivos que CATIA va a copiar
+                    Dim yaExisteEnConjunto As Boolean = False
+                    For Each objPath In oWillBeCopied
+                        If objPath IsNot Nothing AndAlso objPath.ToString().Contains(strNewName & ".") Then
+                            yaExisteEnConjunto = True
+                            Exit For
+                        End If
+                    Next
+
+                    ' Solo renombramos si el nombre no existe todavía en el conjunto
+                    If Not yaExisteEnConjunto Then
+                        SendTo.SetRenameFile(strFileName, strNewName)
+                    Else
+                        ' Si ya existe, imprimimos en consola para saber cuál saltamos
+                        System.Console.WriteLine("Saltado por duplicado: " & strFileName & " -> " & strNewName)
+                    End If
                 End If
             End If
         Next
 
+        ' 4. Ejecución
+        SendTo.Run()
 
-        'Primera ciclo de renombrado
-        'El diccionario oDicRenamed almacena los pares que pueden ser renombrados en primera vuelta
-        For Each de As DictionaryEntry In oDicRenamed
-            SendTo.SetRenameFile(de.Key, de.Value)
-        Next
-
-
-        'Segundo ciclo de renombrado
-        'Si quedaron pares sin renombrar se renombran con este ciclo
-        'El diccionario oDicNoRenamed almacena los pares que no fueron renombrados en la primera vuelta
-        'hay casos en que utilizar un segundo renombrado no funciona - NO ESTA RESUELTO 
-        'If oDicNoRenamed.Count <> 0 Then
-        '    For Each de As DictionaryEntry In oDicNoRenamed
-        '        '  SendTo.SetRenameFile(de.Key, de.Value)
-        '    Next
-        'End If
+        MsgBox("SendTo finalizado con éxito.")
 
     End Sub
-
-    Sub Finalizacion(intFilesInExistance As Integer, SendTo As INFITF.SendToService, oWillBeCopied As Object, strDir As String)
-
-        Dim intResponse As Integer
-        Dim strMsg As String
-
-        If intFilesInExistance > 0 Then
-            strMsg = intFilesInExistance & " Archivo(s) ya existe(n) en el directorio de destino" & vbCrLf & vbCrLf
-            strMsg = strMsg & " ¿Desea reemplazar el/los archivo(s)?" & vbCrLf & vbCrLf
-            strMsg &= " Click OK to proceed or Cancel"
-            intResponse = MsgBox(strMsg, 65, "Replace Files")
-            If intResponse = 1 Then
-                SendTo.Run()
-                'Informa lo que se ha copiado en un mensaje y exit
-                MsgBox("Done" & vbCrLf _
-                       & oWillBeCopied.Length & " Files has been exported to " & strDir, 64, "Succeed")
-                Exit Sub
-            Else
-                Exit Sub
-            End If
-        Else 'Si no hay archivos existentes procede con la ejecución
-            SendTo.Run()
-        End If
-        'Informa lo que se ha copiado en un mensaje y exit
-        MsgBox(oWillBeCopied.Length & " Files has been exported to " & strDir, 64, "Succeed")
-        Exit Sub  'Colocando esta línea se evita que el procedimiento continue con CheckError
-    End Sub
-
-
-
-
-
-
-
-
-
 
 
 
 
 
 End Module
+
+
+
+
+
+
+
+
+
+
+

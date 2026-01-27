@@ -3,16 +3,16 @@
     Sub Main()
 
 
-        System.Console.WriteLine(">>> Starting Export Process...")
-        System.Console.WriteLine(New String("-"c, 60))
+        Console.WriteLine(">>> Starting Export Process...")
+        Console.WriteLine(New String("-"c, 60))
 
 
 
         ' Conexión con CATIA mediante y acceso al Product activo
         Dim session As New CatiaSession()
         If session.Status <> CatiaSession.CatiaSessionStatus.ProductDocument Then
-            Microsoft.VisualBasic.MsgBox("Error: Se requiere un Product activo." & System.Environment.NewLine &
-                   "Estado actual: " & session.Description, Microsoft.VisualBasic.MsgBoxStyle.Critical)
+            MsgBox("Error: Se requiere un Product activo." & Environment.NewLine &
+                   "Estado actual: " & session.Description, MsgBoxStyle.Critical)
             Exit Sub
         End If
         Dim oAppCatia As INFITF.Application = session.Application
@@ -23,16 +23,25 @@
 
         ' Chequeo de estado de guardado
         If Not CheckSaveStatus(oProductDocument) Then
-            Microsoft.VisualBasic.MsgBox("El documento actual no ha sido guardado. Guárdelo antes de continuar.", Microsoft.VisualBasic.MsgBoxStyle.Exclamation, "Aviso")
+            MsgBox("El documento actual no ha sido guardado. Guárdelo antes de continuar.", Microsoft.VisualBasic.MsgBoxStyle.Exclamation, "Aviso")
             Exit Sub
         End If
 
 
 
-        ' Gestión de Directorios
+        ' --- GESTIÓN DE DIRECTORIOS ---
         Dim baseDir As String = "C:\Temp"
         Dim timestamp As String = System.DateTime.Now.ToString("yyyyMMdd_HHmmss")
         Dim folderPath As String = System.IO.Path.Combine(baseDir, "Export_" & timestamp)
+
+        ' Verificamos si la carpeta existe, y si no, la creamos
+        If Not IO.Directory.Exists(folderPath) Then
+            ' CreateDirectory crea toda la ruta necesaria (incluyendo carpetas padre si no existen)
+            IO.Directory.CreateDirectory(folderPath)
+            Console.WriteLine("Carpeta creada: " & folderPath)
+        Else
+            Console.WriteLine("La carpeta ya existe: " & folderPath)
+        End If
 
 
 
