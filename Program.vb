@@ -46,12 +46,8 @@
 
 
 
-
-
         ' Generación del Diccionario
         Dim oDic1 As Specialized.StringDictionary = GetMap(oProductDocument.Product)
-
-
 
 
 
@@ -66,22 +62,12 @@
 
 
 
-
-
-
-
-
-
     ' --- LÓGICA DE MAPEO ---
     Public Function GetMap(objRoot As ProductStructureTypeLib.Product) As System.Collections.Specialized.StringDictionary
         Dim dicc As New System.Collections.Specialized.StringDictionary()
         FillMap(objRoot, dicc)
         Return dicc
     End Function
-
-
-
-
 
 
 
@@ -104,15 +90,12 @@
 
 
 
-
-
     ' --- VERIFICACIÓN DE ESTADO DE GUARDADO ---
     Private Function CheckSaveStatus(oDoc As INFITF.Document) As Boolean
         If System.String.IsNullOrEmpty(oDoc.Path) Then Return False
         If Not oDoc.Saved Then Return False
         Return True
     End Function
-
 
 
 

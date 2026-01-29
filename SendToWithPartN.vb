@@ -41,86 +41,6 @@
 
 
 
-'    Public Sub SendTOWPN(oProductDocument As ProductStructureTypeLib.ProductDocument, oDic1 As Specialized.StringDictionary, strDir As String)
-
-'        ' IMPORTANTE: Si el documento no está guardado, SendTo no verá los links
-'        ' oProductDocument.Save() ' Descomenta esta línea si oWillBeCopied sigue dando 1
-
-'        Dim objAppCATIA As INFITF.Application = oProductDocument.Application
-'        Dim SendTo As INFITF.SendToService = objAppCATIA.CreateSendTo()
-
-'        ' 1. Seteamos el archivo raíz
-'        SendTo.SetInitialFile(oProductDocument.FullName)
-
-'        ' 2. Dimensionamos según el diccionario (133)
-'        ' Usamos una variable intermedia para ver qué detecta CATIA realmente
-'        Dim oWillBeCopied(oDic1.Count - 1) As Object
-'        SendTo.GetListOfToBeCopiedFiles(oWillBeCopied)
-'        SendTo.SetDirectoryFile(strDir)
-
-'        ' --- CARTEL DE CONTROL ---
-'        MsgBox("ESTADO DE CARGA:" & vbCrLf &
-'               "oWillBeCopied.Length: " & oWillBeCopied.Length & vbCrLf &
-'               "oDic1.Count: " & oDic1.Count)
-
-
-
-'        ' --- CICLO DE RENOMBRADO ---
-'        Dim i As Integer
-'        For i = 0 To UBound(oWillBeCopied)
-
-'            If oWillBeCopied(i) Is Nothing Then Continue For
-
-'            ' Extracción manual para evitar caracteres ilegales
-'            Dim strFullPath As String = oWillBeCopied(i).ToString()
-'            Dim lastSlash As Integer = strFullPath.LastIndexOf("\")
-'            Dim strFileName As String = If(lastSlash > -1, strFullPath.Substring(lastSlash + 1), strFullPath)
-
-'            ' Si el nombre del archivo está en nuestro diccionario
-'            If oDic1.ContainsKey(strFileName) Then
-'                Dim strNewName As String = oDic1(strFileName)
-
-'                ' --- VALIDACIÓN PARA EVITAR FAIL POR DUPLICADOS ---
-'                ' 1. Verificamos que el nombre nuevo no sea igual al actual
-'                Dim dotIdx As Integer = strFileName.LastIndexOf(".")
-'                Dim currentNameNoExt As String = If(dotIdx > 0, strFileName.Substring(0, dotIdx), strFileName)
-
-'                If strNewName <> currentNameNoExt Then
-
-'                    MsgBox(strNewName & "--" & currentNameNoExt)
-
-'                    ' 2. Verificamos si el nombre "NCU-2517" ya existe en la lista de CATIA
-'                    ' Para esto, comparamos el strNewName contra todos los archivos que CATIA va a copiar
-'                    Dim yaExisteEnConjunto As Boolean = False
-'                    For Each objPath In oWillBeCopied
-'                        If objPath IsNot Nothing AndAlso objPath.ToString().Contains(strNewName & ".") Then
-'                            yaExisteEnConjunto = True
-'                            Exit For
-'                        End If
-'                    Next
-
-'                    ' Solo renombramos si el nombre no existe todavía en el conjunto
-'                    If Not yaExisteEnConjunto Then
-'                        SendTo.SetRenameFile(strFileName, strNewName)
-'                    Else
-'                        ' Si ya existe, imprimimos en consola para saber cuál saltamos
-'                        System.Console.WriteLine("Saltado por duplicado: " & strFileName & " -> " & strNewName)
-'                    End If
-'                End If
-'            End If
-'        Next
-
-'        ' 4. Ejecución
-'        SendTo.Run()
-
-'        MsgBox("SendTo finalizado con éxito.")
-
-'    End Sub
-
-
-
-'End Module
-
 Option Explicit On
 
 Module SendToWithPartN
@@ -133,15 +53,12 @@ Module SendToWithPartN
         ' 1. Seteamos el archivo raíz
         SendTo.SetInitialFile(oProductDocument.FullName)
 
-        ' 2. Dimensionamos según el diccionario (133)
+
+        ' 2. Dimensionamos según el diccionario
         Dim oWillBeCopied(oDic1.Count - 1) As Object
         SendTo.GetListOfToBeCopiedFiles(oWillBeCopied)
         SendTo.SetDirectoryFile(strDir)
 
-        ' --- CARTEL DE CONTROL ---
-        MsgBox("ESTADO DE CARGA:" & vbCrLf &
-               "oWillBeCopied.Length: " & oWillBeCopied.Length & vbCrLf &
-               "oDic1.Count: " & oDic1.Count)
 
         ' --- DICCIONARIO PARA SEGUNDA PASADA ---
         Dim oDicPendientes As New Specialized.StringDictionary()
@@ -157,6 +74,7 @@ Module SendToWithPartN
             Dim strFileName As String = If(lastSlash > -1, strFullPath.Substring(lastSlash + 1), strFullPath)
 
             If oDic1.ContainsKey(strFileName) Then
+
                 Dim strNewName As String = oDic1(strFileName)
 
                 Dim dotIdx As Integer = strFileName.LastIndexOf(".")
@@ -184,6 +102,7 @@ Module SendToWithPartN
             End If
         Next
 
+
         ' --- SEGUNDO CICLO DE RENOMBRADO (PARA LOS PENDIENTES) ---
         If oDicPendientes.Count > 0 Then
             ' COPIA DE LLAVES: Creamos una lista estática para evitar el error de "Collection was modified"
@@ -203,10 +122,13 @@ Module SendToWithPartN
             Next
         End If
 
+
         ' 4. Ejecución
         SendTo.Run()
 
+
         MsgBox("SendTo finalizado con éxito." & vbCrLf & "Pendientes intentados: " & oDicPendientes.Count)
+
 
     End Sub
 
