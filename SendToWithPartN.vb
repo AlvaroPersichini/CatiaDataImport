@@ -67,13 +67,10 @@ Module SendToWithPartN
         SendTo.SetInitialFile(oProductDocument.FullName)
 
 
-
         ' 2. Dimensionamos según el diccionario
-
         Dim oWillBeCopied(oDic1.Count - 1) As Object
         SendTo.GetListOfToBeCopiedFiles(oWillBeCopied)
         SendTo.SetDirectoryFile(strDir)
-
 
 
 
