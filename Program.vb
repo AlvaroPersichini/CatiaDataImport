@@ -22,21 +22,6 @@
         Dim oWorkbook As Microsoft.Office.Interop.Excel.Workbook = oExcelApp.ActiveWorkbook
         Dim oSheet As Microsoft.Office.Interop.Excel.Worksheet = oWorkbook.ActiveSheet
 
-
-        ' --- GESTIÓN DE DIRECTORIOS ---
-        Dim baseDir As String = "C:\Temp"
-        Dim timestamp As String = System.DateTime.Now.ToString("yyyyMMdd_HHmmss")
-        Dim folderPath As String = System.IO.Path.Combine(baseDir, "Export_" & timestamp)
-        ' Verificamos si la carpeta existe, y si no, la creamos
-        If Not IO.Directory.Exists(folderPath) Then
-            ' CreateDirectory crea toda la ruta necesaria (incluyendo carpetas padre si no existen)
-            IO.Directory.CreateDirectory(folderPath)
-            Console.WriteLine("Carpeta creada: " & folderPath)
-        Else
-            Console.WriteLine("La carpeta ya existe: " & folderPath)
-        End If
-
-
         ' -------------------
         ' ExcelDataExtractor
         ' -------------------
@@ -49,6 +34,17 @@
         ' -------------------
         Dim oCatiaDataInjector As New CatiaDataInjector
         oCatiaDataInjector.InjectData(oProduct, oDic)
+
+
+        ' --- 4. LIMPIEZA FINAL (SIMPLE) ---
+        ' Restauramos alertas
+        session.Application.DisplayFileAlerts = True
+
+        ' Usamos el limpiador para soltar todo lo que tocamos
+        Dim cleaner As New CatiaDataCOMCleaner
+        cleaner.Release(oSheet, oWorkbook, oExcelApp, oProduct, session.Application)
+
+        Console.WriteLine(">>> Finalizado con éxito.")
 
 
     End Sub
