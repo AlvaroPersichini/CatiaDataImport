@@ -78,6 +78,7 @@
     <Compile Include="CatiaSession.vb" />
     <Compile Include="ExcelData.vb" />
     <Compile Include="ExcelDataExtractor.vb" />
+    <Compile Include="ExcelSession.vb" />
     <Compile Include="Form1.vb">
       <SubType>Form</SubType>
     </Compile>

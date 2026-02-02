@@ -1,4 +1,5 @@
-﻿Module Program
+﻿
+Module Program
 
     Sub Main()
 
@@ -7,47 +8,55 @@
         Console.WriteLine(New String("-"c, 60))
 
 
-        ' --- 1. CONEXIÓN Y VALIDACIÓN ---
+
+        ' Catia
         Dim session As New CatiaSession()
         If Not session.IsReady Then
-            MsgBox(session.Description)
-            Exit Sub
+            Console.WriteLine(">>> [ABORT] CATIA Error: " & session.Description)
+            Return
         End If
         Dim oProduct As ProductStructureTypeLib.Product = session.RootProduct
         session.Application.DisplayFileAlerts = False
 
 
-        ' Conexión con Excel y acceso a oActiveSheet
-        Dim oExcelApp As Microsoft.Office.Interop.Excel.Application = GetObject(, "Excel.Application")
-        Dim oWorkbook As Microsoft.Office.Interop.Excel.Workbook = oExcelApp.ActiveWorkbook
-        Dim oSheet As Microsoft.Office.Interop.Excel.Worksheet = oWorkbook.ActiveSheet
 
-        ' -------------------
-        ' ExcelDataExtractor
-        ' -------------------
-        Dim oExcelDataExtractor As New ExcelDataExtractor
-        Dim oDic As Dictionary(Of String, ExcelData) = oExcelDataExtractor.ExtractData(oSheet)
+        ' Excel
+        Dim xlSession As New ExcelSession()
+        If Not xlSession.IsReady Then
+            Console.WriteLine(xlSession.ErrorMessage)
+            Return
+        End If
 
 
-        ' -------------------
-        ' CatiaDataApplier
-        ' -------------------
-        Dim oCatiaDataInjector As New CatiaDataInjector
+
+        ' Extraccion
+        Console.WriteLine(">>> Extracting data from Excel...")
+        Dim oExcelDataExtractor As New ExcelDataExtractor()
+        ' Usamos la hoja de la sesión
+        Dim oDic As Dictionary(Of String, ExcelData) = oExcelDataExtractor.ExtractData(xlSession.ActiveSheet)
+
+
+
+        ' Aplicacion
+        Console.WriteLine(">>> Injecting data into CATIA tree...")
+        Dim oCatiaDataInjector As New CatiaDataInjector()
         oCatiaDataInjector.InjectData(oProduct, oDic)
 
 
-        ' --- 4. LIMPIEZA FINAL (SIMPLE) ---
-        ' Restauramos alertas
+
+        ' Limpieza
         session.Application.DisplayFileAlerts = True
+        Dim cleaner As New CatiaDataCOMCleaner()
+        cleaner.Release(xlSession.ActiveSheet,
+                        xlSession.Workbook,
+                        xlSession.Application,
+                        oProduct,
+                        session.Application)
 
-        ' Usamos el limpiador para soltar todo lo que tocamos
-        Dim cleaner As New CatiaDataCOMCleaner
-        cleaner.Release(oSheet, oWorkbook, oExcelApp, oProduct, session.Application)
 
-        Console.WriteLine(">>> Finalizado con éxito.")
-
+        Console.WriteLine(New String("-"c, 60))
+        Console.WriteLine(">>> Finished Successfully at " & DateTime.Now.ToString("HH:mm:ss"))
 
     End Sub
-
 
 End Module

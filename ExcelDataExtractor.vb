@@ -1,50 +1,15 @@
-﻿'Public Class ExcelDataExtractor
-
-'    Function ExtractData(oSheet As Microsoft.Office.Interop.Excel.Worksheet) As Dictionary(Of String, ExcelData)
-
-'        Dim oDic As New Dictionary(Of String, ExcelData)
-
-'        Dim lastRow As Integer
-
-'        lastRow = oSheet.Cells.SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell).Row
-
-'        For i As Integer = 3 To lastRow
-
-'            Dim oExcelData As New ExcelData
-
-'            With oExcelData
-'                .NewPartNumber = oSheet.Cells.Range("E" & i).Text.ToString
-'                .DescriptionRef = oSheet.Cells.Range("F" & i).Text
-'                .Quantity = oSheet.Cells.Range("G" & i).Text
-'                .Source = oSheet.Cells.Range("H" & i).Text
-'                .Nomenclature = oSheet.Cells.Range("J" & i).Text
-'                .Definition = oSheet.Cells.Range("K" & i).Text
-'            End With
-
-
-'            oDic.Add(oSheet.Cells.Range("D" & i).Text, oExcelData)
-
-'        Next
-
-'        Return oDic
-
-'    End Function
-
-
-
-'End Class
-
-
+﻿Option Explicit On
 
 Public Class ExcelDataExtractor
 
     Function ExtractData(oSheet As Microsoft.Office.Interop.Excel.Worksheet) As Dictionary(Of String, ExcelData)
-        Dim oDic As New Dictionary(Of String, ExcelData)
+
 
         ' 1. Obtener última fila de forma segura
         Dim lastRow As Integer = GetLastRow(oSheet)
 
         ' Si la hoja no tiene datos después del encabezado, salimos temprano
+        Dim oDic As New Dictionary(Of String, ExcelData)
         If lastRow < 3 Then Return oDic
 
         For i As Integer = 3 To lastRow

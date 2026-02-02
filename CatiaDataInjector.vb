@@ -9,6 +9,9 @@ Public Class CatiaDataInjector
     Public Sub InjectData(oRootProduct As ProductStructureTypeLib.Product,
                           dataToInject As Dictionary(Of String, ExcelData))
 
+
+
+
         ' Obtenemos el documento raíz para la lógica de componentes
         Dim rootDoc As INFITF.Document = CType(oRootProduct.ReferenceProduct.Parent, INFITF.Document)
         Dim processedFiles As New HashSet(Of String)
@@ -23,23 +26,36 @@ Public Class CatiaDataInjector
     End Sub
 
     Private Sub ProcesarHijosRecursivo(oParent As ProductStructureTypeLib.Product,
-                                      dataToInject As Dictionary(Of String, ExcelData),
-                                      ByRef processedFiles As HashSet(Of String),
-                                      oParentDoc As INFITF.Document)
+                                  dataToInject As Dictionary(Of String, ExcelData),
+                                  ByRef processedFiles As HashSet(Of String),
+                                  oParentDoc As INFITF.Document)
 
         For Each oChild As ProductStructureTypeLib.Product In oParent.Products
-            Dim oChildDoc As INFITF.Document = CType(oChild.ReferenceProduct.Parent, INFITF.Document)
+            Dim oChildDoc As INFITF.Document = Nothing
 
-            ' Si es un COMPONENT (mismo archivo que el padre)
+            ' --- PROTECCIÓN CONTRA LINK ROTO ---
+            Try
+                ' Intentamos acceder al documento de la referencia
+                oChildDoc = CType(oChild.ReferenceProduct.Parent, INFITF.Document)
+            Catch ex As Exception
+                ' Si falla, es un link roto. Consola y saltamos al siguiente.
+                Console.WriteLine(" [SKIP] Link roto detectado en: " & oChild.Name & ". No se puede inyectar datos.")
+                Continue For
+            End Try
+
+            ' --- LÓGICA DE COMPONENTES ---
+            ' Si el hijo vive en el mismo archivo que el padre
             If oChildDoc.FullName = oParentDoc.FullName Then
+                ' Es un Component interno: entramos a sus hijos sin marcar el archivo como procesado
                 ProcesarHijosRecursivo(oChild, dataToInject, processedFiles, oParentDoc)
             Else
-                ' Si es un ARCHIVO REAL (Part o Product) que no procesamos todavía
+                ' --- LÓGICA DE ARCHIVOS (Part/Product) ---
+                ' Si es un archivo real que no hemos modificado en esta sesión
                 If Not processedFiles.Contains(oChildDoc.FullName) Then
                     ApplyToDocument(oChild, oChildDoc, dataToInject, processedFiles)
                 End If
 
-                ' Si tiene estructura interna, seguimos bajando
+                ' Si el archivo es un ensamble, seguimos bajando en la estructura
                 If TypeOf oChildDoc Is ProductStructureTypeLib.ProductDocument Then
                     ProcesarHijosRecursivo(oChild, dataToInject, processedFiles, oChildDoc)
                 End If
