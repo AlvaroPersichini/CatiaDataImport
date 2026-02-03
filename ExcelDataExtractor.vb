@@ -4,7 +4,6 @@ Public Class ExcelDataExtractor
 
     Function ExtractData(oSheet As Microsoft.Office.Interop.Excel.Worksheet) As Dictionary(Of String, ExcelData)
 
-
         ' 1. Obtener última fila de forma segura
         Dim lastRow As Integer = GetLastRow(oSheet)
 
