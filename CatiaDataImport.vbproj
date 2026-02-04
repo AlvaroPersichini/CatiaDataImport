@@ -79,6 +79,7 @@
     <Compile Include="CatiaSession.vb" />
     <Compile Include="ExcelData.vb" />
     <Compile Include="ExcelDataExtractor.vb" />
+    <Compile Include="ExcelDataInjector.vb" />
     <Compile Include="ExcelDataUpdater.vb" />
     <Compile Include="ExcelSession.vb" />
     <Compile Include="Form1.vb">

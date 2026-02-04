@@ -1,5 +1,4 @@
-﻿
-Imports System.Collections.Specialized.BitVector32
+﻿Option Explicit On
 
 Module Program
 
@@ -31,9 +30,7 @@ Module Program
         ' Extraccion
         Console.WriteLine(">>> Extracting data from Excel...")
         Dim oExcelDataExtractor As New ExcelDataExtractor()
-        ' Usamos la hoja de la sesión
         Dim oDic As Dictionary(Of String, ExcelData) = oExcelDataExtractor.ExtractData(xlSession.ActiveSheet)
-
 
 
         ' Aplicacion
@@ -42,13 +39,15 @@ Module Program
         oCatiaDataInjector.InjectData(oProduct, oDic)
 
 
-        ' Update Excel
-        Console.WriteLine(">>> Updating Excel with results...")
+        ' Extract Catia Data
+        Console.WriteLine(">>> Extracting data from CATIA...")
         Dim oCatiaDataExtractor As New CatiaDataExtractor()
         Dim oCatiaData As Dictionary(Of String, PwrProduct) = oCatiaDataExtractor.ExtractData(oProduct, "", False)
-        Dim oExcelDataUpdated As New ExcelDataUpdater()
-        oExcelDataUpdated.UpdateData(xlSession.ActiveSheet, oCatiaData)
 
+        ' Inject into Excel
+        Console.WriteLine(">>> Injecting data into Excel...")
+        Dim oExcelDataInjector As New ExcelDataInjector()
+        oExcelDataInjector.InjectData(xlSession.ActiveSheet, oCatiaData)
 
 
         ' Limpieza
@@ -58,16 +57,15 @@ Module Program
         cleaner.Release(xlSession.ActiveSheet, xlSession.Workbook, xlSession.Application, oProduct, session.Application)
 
 
-
         ' Fin
         Console.WriteLine(New String("-"c, 60))
         Console.WriteLine(">>> Finished Successfully at " & DateTime.Now.ToString("HH:mm:ss"))
 
     End Sub
 
+
+
     Sub Update()
-
-
 
         ' Catia
         Dim session As New CatiaSession()
@@ -85,19 +83,16 @@ Module Program
             Return
         End If
 
-        ' Extraccion
-        Console.WriteLine(">>> Extracting data from Excel...")
-        Dim oExcelDataExtractor As New ExcelDataExtractor()
-        ' Usamos la hoja de la sesión
-        Dim oDic As Dictionary(Of String, ExcelData) = oExcelDataExtractor.ExtractData(xlSession.ActiveSheet)
-
-        ' Update Excel
+        ' Extract Catia Data
         Console.WriteLine(">>> Updating Excel with results...")
         Dim oCatiaDataExtractor As New CatiaDataExtractor()
         Dim oCatiaData As Dictionary(Of String, PwrProduct) = oCatiaDataExtractor.ExtractData(oProduct, "", False)
-        Dim oExcelDataUpdated As New ExcelDataUpdater()
-        oExcelDataUpdated.UpdateData(xlSession.ActiveSheet, oCatiaData)
 
+
+        ' Inject into Excel
+        Console.WriteLine(">>> Injecting data into Excel...")
+        Dim oExcelDataInjector As New ExcelDataInjector()
+        oExcelDataInjector.InjectData(xlSession.ActiveSheet, oCatiaData)
 
 
         ' Limpieza
@@ -106,6 +101,9 @@ Module Program
         Dim cleaner As New CatiaDataCOMCleaner()
         cleaner.Release(xlSession.ActiveSheet, xlSession.Workbook, xlSession.Application, oProduct, session.Application)
 
+        ' Fin
+        Console.WriteLine(New String("-"c, 60))
+        Console.WriteLine(">>> Finished Successfully at " & DateTime.Now.ToString("HH:mm:ss"))
 
     End Sub
 
