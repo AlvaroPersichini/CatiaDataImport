@@ -8,7 +8,6 @@ Module Program
         Console.WriteLine(">>> Starting Export Process...")
         Console.WriteLine(New String("-"c, 60))
 
-
         ' Catia
         Dim session As New CatiaSession()
         If Not session.IsReady Then
@@ -34,6 +33,7 @@ Module Program
 
 
         ' Aplicacion
+        ' Acá se puede cambiar a que sea una function no un sub. y que la function devuelva el diccionario de los que se modificaron
         Console.WriteLine(">>> Injecting data into CATIA tree...")
         Dim oCatiaDataInjector As New CatiaDataInjector()
         oCatiaDataInjector.InjectData(oProduct, oDic)

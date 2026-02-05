@@ -48,9 +48,7 @@ Public Class ExcelDataInjector
             End With
             i += 1
         Next
-        oSheetListView.Protect(Contents:=True, UserInterfaceOnly:=True)
-        oSheetListView.Application.ActiveWindow.DisplayVerticalScrollBar = True
-        oSheetListView.Application.ActiveWindow.DisplayHorizontalScrollBar = True
+
 
     End Sub
 
