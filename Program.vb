@@ -6,7 +6,7 @@ Module Program
 
         ' Inicio
         Console.WriteLine(">>> Starting Export Process...")
-        Console.WriteLine(New String("-"c, 60))
+
 
         ' Catia
         Dim session As New CatiaSession()
