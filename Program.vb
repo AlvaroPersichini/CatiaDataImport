@@ -58,7 +58,6 @@ Module Program
 
 
         ' Fin
-        Console.WriteLine(New String("-"c, 60))
         Console.WriteLine(">>> Finished Successfully at " & DateTime.Now.ToString("HH:mm:ss"))
 
     End Sub
