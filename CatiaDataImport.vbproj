@@ -76,7 +76,6 @@
     <Compile Include="CatiaDataCOMCleaner.vb" />
     <Compile Include="CatiaDataExtractor.vb" />
     <Compile Include="CatiaDataInjector.vb" />
-    <Compile Include="CatiaSession.vb" />
     <Compile Include="ExcelData.vb" />
     <Compile Include="ExcelDataExtractor.vb" />
     <Compile Include="ExcelDataInjector.vb" />
@@ -194,6 +193,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CATIAClassLibrary\CATIAClassLibrary.vbproj">
+      <Project>{76122fd1-af7d-421d-83c6-33bc00d73b9b}</Project>
+      <Name>CATIAClassLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

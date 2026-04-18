@@ -1,4 +1,6 @@
 ﻿Option Explicit On
+Option Strict On
+Imports CATIAClassLibrary
 
 Module Program
 
@@ -9,7 +11,7 @@ Module Program
 
 
         ' Catia
-        Dim session As New CatiaSession()
+        Dim session As New CatiaSession
         If Not session.IsReady Then
             Console.WriteLine(">>> [ABORT] CATIA Error: " & session.Description)
             Return
