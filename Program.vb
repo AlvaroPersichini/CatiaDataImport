@@ -1,6 +1,8 @@
 ﻿Option Explicit On
 Option Strict On
 Imports CATIAClassLibrary
+Imports EXCELClassLibrary
+
 
 Module Program
 
@@ -8,7 +10,6 @@ Module Program
 
         ' Inicio
         Console.WriteLine(">>> Starting Export Process...")
-
 
         ' Catia
         Dim session As New CatiaSession

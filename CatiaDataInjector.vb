@@ -1,17 +1,13 @@
 ﻿Option Explicit On
 Option Strict On
-
-
+Imports EXCELClassLibrary
 
 Public Class CatiaDataInjector
-
 
     Public Sub InjectData(oRootProduct As ProductStructureTypeLib.Product,
                           dataToInject As Dictionary(Of String, ExcelData))
 
-
         ' Obtenemos el documento raíz para la lógica de componentes
-
         Dim rootDoc As INFITF.Document = CType(oRootProduct.ReferenceProduct.Parent, INFITF.Document)
 
         Dim processedFiles As New HashSet(Of String)
@@ -23,6 +19,7 @@ Public Class CatiaDataInjector
         ProcesarHijosRecursivo(oRootProduct, dataToInject, processedFiles, rootDoc)
 
         Console.WriteLine("[" & DateTime.Now.ToString("HH:mm:ss") & "] Injection complete.")
+
     End Sub
 
     Private Sub ProcesarHijosRecursivo(oParent As ProductStructureTypeLib.Product,
@@ -46,8 +43,8 @@ Public Class CatiaDataInjector
             End Try
 
 
-
-            ' Si el hijo vive en el mismo archivo que el padre entonces es Component. Entramos a sus hijos sin marcar el archivo como procesado
+            ' Si el hijo vive en el mismo archivo que el padre entonces es Component.
+            ' Entramos a sus hijos sin marcar el archivo como procesado
             If oChildDoc.FullName = oParentDoc.FullName Then
                 ProcesarHijosRecursivo(oChild, dataToInject, processedFiles, oParentDoc)
             Else
@@ -62,10 +59,7 @@ Public Class CatiaDataInjector
             End If
         Next
 
-
     End Sub
-
-
 
 
     Private Sub ApplyToDocument(oInstancia As ProductStructureTypeLib.Product,
