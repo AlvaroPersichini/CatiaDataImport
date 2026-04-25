@@ -12,7 +12,7 @@ Public Class ExcelDataExtractor
         If lastRow < 3 Then Return oDic
 
         For i As Integer = 3 To lastRow
-            ' Clave única (Columna D)
+
             Dim key As String = oSheet.Cells(i, 4).Text.ToString()
 
             ' Validamos que la clave no esté vacía antes de agregar

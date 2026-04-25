@@ -1,5 +1,6 @@
 ﻿Option Explicit On
 Option Strict On
+Imports CATIAClassLibrary
 
 Public Class ExcelDataInjector
 

@@ -28,7 +28,9 @@ Module Program
         End If
 
 
-        ' Extraccion
+        ' Extraccion de datos de Excel:
+        ' Se extraen los datos de Excel a un diccionario.
+        ' Ese diccionario luego 
         Console.WriteLine(">>> Extracting data from Excel...")
         Dim oExcelDataExtractor As New ExcelDataExtractor()
         Dim oDic As Dictionary(Of String, ExcelData) = oExcelDataExtractor.ExtractData(xlSession.ActiveSheet)

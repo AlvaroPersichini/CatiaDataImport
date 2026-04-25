@@ -5,9 +5,7 @@ Option Strict On
 
 Public Class CatiaDataInjector
 
-    ''' <summary>
-    ''' Inyecta los datos desde la lista de ExcelData hacia el árbol de CATIA.
-    ''' </summary>
+
     Public Sub InjectData(oRootProduct As ProductStructureTypeLib.Product,
                           dataToInject As Dictionary(Of String, ExcelData))
 

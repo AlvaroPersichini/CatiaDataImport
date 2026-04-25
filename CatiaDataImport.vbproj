@@ -74,7 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CatiaDataCOMCleaner.vb" />
-    <Compile Include="CatiaDataExtractor.vb" />
     <Compile Include="CatiaDataInjector.vb" />
     <Compile Include="ExcelData.vb" />
     <Compile Include="ExcelDataExtractor.vb" />
@@ -104,7 +103,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Program.vb" />
-    <Compile Include="PwrProduct.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">

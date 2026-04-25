@@ -1,8 +1,8 @@
-﻿Imports System.Runtime.InteropServices
-
+﻿Option Explicit On
+Option Strict On
 Public Class ExcelSession
     ' Declaración de la API de Windows para obtener el PID
-    <DllImport("user32.dll")>
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, ByRef lpdwProcessId As Integer) As Integer
     End Function
     Public Property Application As Microsoft.Office.Interop.Excel.Application
@@ -15,7 +15,7 @@ Public Class ExcelSession
     Public Sub New()
         Try
             ' 1. Conexión con Excel
-            Me.Application = CType(Marshal.GetActiveObject("Excel.Application"), Microsoft.Office.Interop.Excel.Application)
+            Me.Application = CType(System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application"), Microsoft.Office.Interop.Excel.Application)
 
             ' 2. Obtener el PID (Process ID) real
             ' Usamos una llamada a la API de Windows para convertir el Hwnd de la ventana en un PID
@@ -35,21 +35,18 @@ Public Class ExcelSession
                 Return
             End If
 
-
             Me.Workbooks = Me.Application.Workbooks
             Me.Workbook = Me.Application.ActiveWorkbook
             Me.ActiveSheet = CType(Me.Workbook.ActiveSheet, Microsoft.Office.Interop.Excel.Worksheet)
 
             Me.IsReady = True
 
-        Catch ex As COMException
+        Catch ex As System.Runtime.InteropServices.COMException
             Me.ErrorMessage = ">>> [ERROR] No se detectó ninguna instancia de Excel abierta."
         Catch ex As System.Exception
             Me.ErrorMessage = ">>> [ERROR] " & ex.Message
         End Try
     End Sub
-
-
 
 
     Sub CreateNewWorkbook()
@@ -61,9 +58,7 @@ Public Class ExcelSession
     Sub GetActiveWorkbook()
         Try
             ' 1. Conexión con Excel
-            Me.Application = CType(Marshal.GetActiveObject("Excel.Application"), Microsoft.Office.Interop.Excel.Application)
-
-
+            Me.Application = CType(System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application"), Microsoft.Office.Interop.Excel.Application)
 
 
             ' 2. Obtener el PID (Process ID) real
@@ -91,17 +86,13 @@ Public Class ExcelSession
 
             Me.IsReady = True
 
-        Catch ex As COMException
+        Catch ex As System.Runtime.InteropServices.COMException
             Me.ErrorMessage = ">>> [ERROR] No se detectó ninguna instancia de Excel abierta."
         Catch ex As System.Exception
             Me.ErrorMessage = ">>> [ERROR] " & ex.Message
         End Try
 
     End Sub
-
-
-
-
 
 
 
