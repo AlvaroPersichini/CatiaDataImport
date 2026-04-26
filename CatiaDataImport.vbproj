@@ -5,12 +5,12 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0E08B572-7CED-4B16-8F1A-5E1A910F231E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <StartupObject>CatiaDataImport.Form1</StartupObject>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>CatiaDataImport.My.MyApplication</StartupObject>
     <RootNamespace>CatiaDataImport</RootNamespace>
     <AssemblyName>CatiaDataImport</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>Console</MyType>
+    <MyType>WindowsForms</MyType>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -73,9 +73,6 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CatiaDataCOMCleaner.vb" />
-    <Compile Include="CatiaDataInjector.vb" />
-    <Compile Include="ExcelDataInjector.vb" />
     <Compile Include="Form1.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -190,13 +187,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CATIAClassLibrary\CATIAClassLibrary.vbproj">
-      <Project>{76122fd1-af7d-421d-83c6-33bc00d73b9b}</Project>
-      <Name>CATIAClassLibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EXCELClassLibrary\EXCELClassLibrary.vbproj">
-      <Project>{9d8dc3c6-5ea9-4635-b3c9-6487e08a3004}</Project>
-      <Name>EXCELClassLibrary</Name>
+    <ProjectReference Include="..\CatiaExcelClassLibrary\CatiaExcelClassLibrary.vbproj">
+      <Project>{e6699062-1b97-4aee-ad7b-0c8ba1184749}</Project>
+      <Name>CatiaExcelClassLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
