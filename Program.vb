@@ -7,8 +7,6 @@ Module Program
 
     Sub Main()
 
-        ' Inicio
-
 
         ' Catia
         Dim session As New CatiaSession
